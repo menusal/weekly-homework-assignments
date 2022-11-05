@@ -1,40 +1,70 @@
 import Header from "./components/views/Header";
+import {
+  BrowserRouter as Router,
+  Navigate,
+  Route,
+  Routes,
+} from "react-router-dom";
+import { Switch } from "@headlessui/react";
+import Login from "./components/views/Login";
+import Dashboard from "./components/views/Dashboard";
+import { Auth, User } from "firebase/auth";
+import { auth } from "./firebase";
+import NotFound from "./components/views/NotFound";
+import { useAuthState } from "react-firebase-hooks/auth";
+import Task from "./components/views/Task";
 
-function App() {
+export const ROUTES = {
+  LOGIN: "/login",
+  DASHBOARD: "/dashboard",
+  TASK: "/task",
+};
+
+export default function App() {
+  const [user, loading, error] = useAuthState(auth);
+
   return (
-    <>
-      <Header />
-      <div className="mx-auto bg-slate-200 dark:bg-slate-800 p-8 h-screen">
-        <div className="container mx-auto bg-slate-50  dark:bg-slate-900 rounded-xl shadow p-8 m-1 max-w-lg">
-          <p className="text-3xl text-gray-700 dark:text-white font-bold mb-5">
-            Welcome Noa
-          </p>
-          <p className="text-gray-500 dark:text-gray-300 text-lg">
-            Any homework to register?
-          </p>
-        </div>
-        <div className="container mx-auto bg-slate-50  dark:bg-slate-900 rounded-xl shadow p-8 m-8 text-center max-w-lg">
-          <button
-            type="button"
-            className=" w-full border border-blue-600 bg-blue-600 text-white rounded-md px-4 py-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline"
-          >
-            Register homework
-          </button>
-          <button
-            type="button"
-            className=" mt-4 w-full border border-green-600 bg-green-600 text-white rounded-md px-4 py-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline"
-          >
-            Add new homework
-          </button>
-          <button
-            type="button"
-            className=" mt-4 w-full border border-green-600 bg-green-600 text-white rounded-md px-4 py-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline"
-          >
-            Show challenges
-          </button>
-        </div>
+    <div className="h-full bg-gradient-to-tl from-green-400 to-indigo-900 w-full">
+      <div className="h-screen grid justify-items-center">
+        <Router>
+          <Routes>
+            <Route path="*" element={<NotFound />} />
+            <Route path={ROUTES.LOGIN} element={<Login />} />
+            <Route
+              path={ROUTES.DASHBOARD}
+              element={
+                <ProtectedRoute user={user}>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={ROUTES.TASK}
+              element={
+                <ProtectedRoute user={user}>
+                  <Task />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Router>
       </div>
-    </>
+    </div>
   );
 }
-export default App;
+
+const ProtectedRoute = ({
+  user,
+  redirectPath = ROUTES.LOGIN,
+  children,
+}: {
+  user: User;
+  redirectPath?: string;
+  children: React.ReactNode;
+}) => {
+  if (!user) {
+    return <Navigate to={redirectPath} replace />;
+  }
+
+  return children;
+};
