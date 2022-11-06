@@ -3,59 +3,48 @@ import { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../firebase";
 import useHomeworks from "../../hooks/useHomeworks";
-import useTasks from "../../hooks/useTasks";
 
-export default function Task() {
+export default function Homework() {
   const [user] = useAuthState(auth);
   const [errors, setErrors] = useState<string[]>([]);
   const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
-  const [homework, setHomework] = useState<any>("");
   const [loading, setLoading] = useState(false);
+  const [benefit, setBenefit] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [currentTask, setCurrentTask] = useState("");
+  const [currentHomework, setCurrentHomework] = useState("");
+  
+  const { homeworks, addHomework, deleteHomework } = useHomeworks(user?.uid);
 
-  const { tasks, addTask, deleteTask } = useTasks(user?.uid);
-  const { homeworks } = useHomeworks(user?.uid);
-
-  const handleAddTask = async () => {
+  const handleAddHomework = async () => {
     if (description.length === 0) {
       setErrors(["Description is required"]);
       return;
     }
 
-    if (date.length === 0) {
-      setErrors(["Date is required"]);
+    if (Number(benefit) === 0 || benefit.length === 0) {
+      setErrors(["Benefit must be greater than 0"]);
       return;
     }
-
-    if (homework === null) {
-      setErrors(["Homework is required"]);
-      return;
-    }
-
-    const currentHomework = homeworks.find((row: any) => row.id === homework);
 
     setLoading(true);
 
-    await addTask({
+    await addHomework({
       description,
-      date,
-      homework: currentHomework,
+      benefit: Number(benefit),
     });
 
     setLoading(false);
     setDescription("");
-    setHomework("");  
+    setBenefit("");
   };
 
-  const handleDeleteTask = async (id: string) => {
-    setCurrentTask(id);
+  const handleDeleteHomework = async (id: string) => {
+    setCurrentHomework(id);
     setShowModal(true);
   };
 
-  const confirmDeleteTask = async () => {
-    await deleteTask(currentTask);
+  const confirmDeleteHomework = async () => {
+    await deleteHomework(currentHomework);
     setShowModal(false);
   };
 
@@ -68,7 +57,7 @@ export default function Task() {
           transition={{ duration: 2 }}
         >
           <div className="container mx-auto  max-w-lg">
-            <p className="text-4xl text-white font-bold mb-5">Tasks</p>
+            <p className="text-4xl text-white font-bold mb-5">Homeworks</p>
           </div>
         </motion.div>
       </div>
@@ -79,7 +68,7 @@ export default function Task() {
       >
         <div className="overflow-auto max-w-6xl bg-white h-screen">
           <div className="py-2 inline-block min-w-full">
-            <p className="text-gray-900 text-2xl text-left p-6">New Task</p>
+            <p className="text-gray-900 text-2xl text-left p-6">New Homework</p>
             <div className="py-1 px-6">
               {errors.length > 0 && (
                 <div
@@ -97,31 +86,6 @@ export default function Task() {
                 </div>
               )}
 
-              <label htmlFor="description">Date</label>
-              <input
-                id="date"
-                type="date"
-                autoComplete="off"
-                onChange={(e) => setDate(e.target.value)}
-                className="form-input px-4 py-3 rounded-md w-full mb-4"
-              />
-              <label htmlFor="description">homework</label>
-              <select
-                value={homework}
-                onChange={(e) => {
-                  console.log(e.target.value);
-                  setHomework(e.target.value);
-                }}
-                className="form-select px-4 py-3 rounded-md w-full mb-4"
-              >
-                <option value="">Select homework</option>
-                {homeworks.map((homework) => (
-                  <option key={homework.id} value={homework.id}>
-                    {homework.description}
-                  </option>
-                ))}
-              </select>
-
               <label htmlFor="description">Description</label>
               <input
                 id="description"
@@ -132,18 +96,28 @@ export default function Task() {
                 onChange={(e) => setDescription(e.target.value)}
                 className="form-input px-4 py-3 rounded-md w-full mb-4"
               />
-
+              <label htmlFor="benefit">Benefit (in €)</label>
+              <input
+                id="benefit"
+                type="number"
+                value={benefit}
+                placeholder="0"
+                max={100}
+                min={0}
+                onChange={(e) => setBenefit(Number(e.target.value))}
+                className="form-input px-4 py-3 rounded-md w-full mb-4"
+              />
               <button
                 disabled={loading}
-                onClick={handleAddTask}
+                onClick={handleAddHomework}
                 className="transition duration-500 ease select-none hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 bg-indigo-900 focus:ring-gray-700 py-3.5 px-4 border rounded-lg border-gray-700 flex items-center w-full mb-4 text-white"
               >
-                Add task
+                Add homework
               </button>
             </div>
             <div className="overflow-hidden">
               <p className="text-gray-900 text-2xl text-left p-6">
-                Registered tasks
+                Registered homeworks
               </p>
 
               <motion.div
@@ -169,20 +143,20 @@ export default function Task() {
                     </tr>
                   </thead>
                   <tbody>
-                    {tasks.map((task, index) => (
+                    {homeworks.map((homework, index) => (
                       <tr
                         key={index}
                         className="border-b cursor-pointer"
-                        onClick={() => handleDeleteTask(task.id)}
+                        onClick={() => handleDeleteHomework(homework.id)}
                       >
                         <td className="text-lg text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                          <span className="text-xs">{task.date}</span><br /> {task.homework.description}
+                          {homework.description}
                         </td>
                         <td
                           align="right"
                           className="text-lg font-bold text-gray-900 px-6 py-4 whitespace-nowrap"
                         >
-                          {task.homework.benefit} €
+                          {homework.benefit} €
                         </td>
                       </tr>
                     ))}
@@ -214,15 +188,15 @@ export default function Task() {
                 {/*body*/}
                 <div className="relative p-6 flex-auto">
                   <p className="my-4 text-slate-500 text-lg leading-relaxed">
-                    If you delete this task, you will not be able to recover.
-                    Are you sure you want to delete it?
+                    If you delete this homework, you will not be able to recover
+                    it and all the related task will be deleted too.
                   </p>
                   <button
                     className="bg-red-500 text-white active:bg-red-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 w-full"
                     type="button"
-                    onClick={confirmDeleteTask}
+                    onClick={confirmDeleteHomework}
                   >
-                    Delete task
+                    Delete homework
                   </button>
                 </div>
                 {/*footer*/}

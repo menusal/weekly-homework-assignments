@@ -56,4 +56,6 @@ export {
   db,
   signInWithGoogle,
   logout,
+  query,
+  collection
 };
