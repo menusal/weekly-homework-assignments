@@ -18,6 +18,11 @@ export default function Task() {
   const { tasks, addTask, deleteTask } = useTasks(user?.uid);
   const { homeworks } = useHomeworks(user?.uid);
 
+  
+  const totalBenefit = tasks.reduce((acc, task) => {
+    return acc + task.homework.benefit;
+  }, 0); 
+
   const handleAddTask = async () => {
     if (description.length === 0) {
       setErrors(["Description is required"]);
@@ -68,7 +73,7 @@ export default function Task() {
           transition={{ duration: 2 }}
         >
           <div className="container mx-auto  max-w-lg">
-            <p className="text-4xl text-white font-bold mb-5">Tasks</p>
+            <p className="text-4xl text-white font-bold mb-5">Tasks - (€{totalBenefit})</p>
           </div>
         </motion.div>
       </div>
@@ -164,7 +169,7 @@ export default function Task() {
                         scope="col"
                         className="text-sm font-medium text-gray-900 px-6 py-4 text-center"
                       >
-                        Benefit
+                        Total
                       </th>
                     </tr>
                   </thead>
@@ -182,7 +187,7 @@ export default function Task() {
                           align="right"
                           className="text-lg font-bold text-gray-900 px-6 py-4 whitespace-nowrap"
                         >
-                          {task.homework.benefit} €
+                          €{task.homework.benefit}
                         </td>
                       </tr>
                     ))}
