@@ -5,6 +5,7 @@ import {
   getDocumentsFromCollectionHomeworks,
 } from "../data/services/homerworksServices";
 
+// eslint-disable-next-line  @typescript-eslint/no-unused-vars
 export default function useHomeworks(uid?: string) {
   const [homeworks, setHomeworks] = React.useState([]);
 
@@ -13,7 +14,20 @@ export default function useHomeworks(uid?: string) {
       const homeworks = docs.docs.map((doc) => {
         return { id: doc.id, ...doc.data() };
       });
-      setHomeworks(homeworks);
+
+      const oerderByDescription = homeworks.sort((a, b) => {
+        // @ts-ignore
+        if (a.description < b.description) {
+          return -1;
+        }
+        // @ts-ignore
+        if (a.description > b.description) {
+          return 1;
+        }
+        return 0;
+      });
+      // @ts-ignore
+      setHomeworks(oerderByDescription);
     });
   }, []);
 

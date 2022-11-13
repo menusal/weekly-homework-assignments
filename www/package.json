@@ -6,27 +6,37 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx,.vue src",
+    "lint-and-fix": "eslint . --ext .ts --fix"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.3",
     "@heroicons/react": "^2.0.13",
+    "echarts-for-react": "^3.0.2",
     "firebase": "^9.13.0",
     "framer-motion": "^7.6.4",
+    "js-confetti": "^0.11.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-firebase-hooks": "^5.0.3",
-    "react-router-dom": "^6.4.3"
+    "react-router-dom": "^6.4.3",
+    "use-sound": "^4.0.1"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.3",
     "@types/react": "^18.0.22",
     "@types/react-dom": "^18.0.7",
+    "@typescript-eslint/eslint-plugin": "^5.42.1",
+    "@typescript-eslint/parser": "^5.42.1",
     "@vitejs/plugin-react": "^2.2.0",
     "autoprefixer": "^10.4.13",
+    "eslint": "^8.27.0",
+    "eslint-plugin-react": "^7.31.10",
     "postcss": "^8.4.18",
     "tailwindcss": "^3.2.1",
     "typescript": "^4.6.4",
-    "vite": "^3.2.0"
+    "vite": "^3.2.0",
+    "vite-plugin-eslint": "^1.8.1"
   }
 }

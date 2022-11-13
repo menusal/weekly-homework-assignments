@@ -1,19 +1,26 @@
 import React, { useCallback, useEffect } from "react";
+import { OrderTypes } from "../config";
 import {
   addDocumentToCollectionTasks,
   deleteDocumentFromCollectionTasks,
   getDocumentsFromCollectionTasks,
 } from "../data/services/tasksServices";
+import { getOrderedTasks } from "../utils/tasks.utils";
 
+// eslint-disable-next-line  @typescript-eslint/no-unused-vars
 export default function useTasks(uid?: string) {
   const [tasks, setTasks] = React.useState([]);
 
-  const setDocuments = useCallback(async () => {
+  const getDocuments = useCallback(async () => {
     getDocumentsFromCollectionTasks().then((docs) => {
       const tasks = docs.docs.map((doc) => {
         return { id: doc.id, ...doc.data() };
       });
-      setTasks(tasks);
+      // Order tasks by date
+      const orderedTasks = getOrderedTasks(tasks, OrderTypes.DESC);
+
+      // @ts-ignore
+      setTasks(orderedTasks);
     });
   }, []);
 
@@ -33,18 +40,18 @@ export default function useTasks(uid?: string) {
         homework,
       });
 
-      setDocuments();
+      getDocuments();
     },
     []
   );
 
   const deleteTask = useCallback(async (id: string) => {
     await deleteDocumentFromCollectionTasks(id);
-    setDocuments();
+    getDocuments();
   }, []);
 
   useEffect(() => {
-    setDocuments();
+    getDocuments();
 
     return () => {
       setTasks([]);

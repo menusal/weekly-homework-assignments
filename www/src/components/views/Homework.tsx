@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../firebase";
 import useHomeworks from "../../hooks/useHomeworks";
+import { Item } from "../../types";
 
 export default function Homework() {
   const [user] = useAuthState(auth);
@@ -50,14 +51,14 @@ export default function Homework() {
 
   return (
     <>
-      <div className="container flex flex-col md:flex-row items-center justify-center px-5 text-gray-700 m-4">
+      <div className="container flex flex-col md:flex-row items-center justify-center px-5 text-gray-700">
         <motion.div
           initial={{ opacity: 0, scale: 1 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 2 }}
         >
-          <div className="container mx-auto  max-w-lg">
-            <p className="text-4xl text-white font-bold mb-5">Homeworks</p>
+          <div className="container mx-auto max-w-lg py-5">
+            <p className="text-2xl text-white font-bold">Homeworks</p>
           </div>
         </motion.div>
       </div>
@@ -104,6 +105,7 @@ export default function Homework() {
                 placeholder="0"
                 max={100}
                 min={0}
+                // @ts-ignore
                 onChange={(e) => setBenefit(Number(e.target.value))}
                 className="form-input px-4 py-3 rounded-md w-full mb-4"
               />
@@ -125,7 +127,7 @@ export default function Homework() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <table className="min-w-full mb-32">
+                <table className="min-w-full mb-96">
                   <thead className="border-b">
                     <tr>
                       <th
@@ -143,15 +145,17 @@ export default function Homework() {
                     </tr>
                   </thead>
                   <tbody>
-                    {homeworks.map((homework, index) => (
+                    {homeworks.map((homework: Item, index) => (
                       <tr
                         key={index}
                         className="border-b cursor-pointer"
+                        // @ts-ignore
                         onClick={() => handleDeleteHomework(homework.id)}
                       >
                         <td className="text-lg text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                          {homework.description}
+                          {homework.description as ReactNode}
                         </td>
+                        {/* @ts-ignore */}
                         <td
                           align="right"
                           className="text-lg font-bold text-gray-900 px-6 py-4 whitespace-nowrap"

@@ -1,46 +1,45 @@
 import { motion } from "framer-motion";
-import React, { useEffect, useRef } from "react";
+import { useRef, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
 import { auth, logout } from "../../firebase";
 import { useMatchRoutes } from "../../hooks/useMatchRoutes";
+import useSound from "use-sound";
+import nyan from "../../assets/nyan.mp3";
 
-const dropdown = document.getElementById("dropdown");
 
 export default function Header() {
   const navigate = useNavigate();
   const [user] = useAuthState(auth);
+  const [isMenuActive, setIsMenuActive] = useState(false);
   const { isDashboard, isLogin } = useMatchRoutes();
   const ref = useRef(null);
 
+  const [play, exposedData] = useSound(nyan);
+
   const toggleDropdown = () => {
-    dropdown?.classList.toggle("hidden");
+    setIsMenuActive(!isMenuActive);
+    console.log("toggle", ref);
+    if (isMenuActive) {
+      exposedData.stop();
+    } else {
+      exposedData.stop() 
+      play();
+    }
   };
 
-  useEffect(() => {
-    /**
-     * Alert if clicked on outside of element
-     */
-    function handleClickOutside(event: MouseEvent) {
-      // If dropdown has class hidden
-      if (!dropdown?.classList.contains("hidden")) {
-        setTimeout(() => toggleDropdown(), 500);
-      }
-    }
-    // Bind the event listener
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      // Unbind the event listener on clean up
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [ref]);
+  const handleLogout = () => {
+    logout();
+    exposedData.stop() 
+    setIsMenuActive(false);
+  }
 
   return (
     <div className="fixed w-full h-8">
       <div
         ref={ref}
         id="dropdown"
-        className="hidden absolute top-3 right-20 shadow-xl m-r-10 z-10 w-44 bg-indigo-900 rounded divide-y divide-gray-100 dark:bg-gray-700"
+        className={`${ !isMenuActive ? 'hidden' : ''} absolute top-3 right-20 shadow-xl m-r-10 z-10 w-44 bg-white rounded divide-y divide-gray-100`}
       >
         <ul
           className="py-1 text-sm text-gray-700 dark:text-gray-200"
@@ -49,7 +48,7 @@ export default function Header() {
           <li>
             <a
               href="#"
-              onClick={logout}
+              onClick={handleLogout}
               className="block py-2 px-4 flex items-center transition duration-500 ease select-none hover:bg-indigo-600"
             >
               <svg
@@ -57,7 +56,7 @@ export default function Header() {
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
-                stroke="white"
+                stroke="#333"
                 className="w-6 h-6"
               >
                 <path
@@ -67,13 +66,7 @@ export default function Header() {
                 />
               </svg>
 
-              <p
-                className="text-base font-medium ml-4 text-white"
-                
-              >
-                {" "}
-                Logout
-              </p>
+              <p className="text-base font-medium ml-4 text-slate-900"> Logout</p>
             </a>
           </li>
         </ul>

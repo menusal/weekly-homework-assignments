@@ -5,7 +5,7 @@ import { ROUTES } from "../../App";
 import { auth } from "../../firebase";
 
 export default function Dashboard() {
-  const [user, loading, error] = useAuthState(auth);
+  const [user] = useAuthState(auth);
 
   return (
     <div className="container flex flex-col md:flex-row items-center justify-center px-5 text-gray-700">
@@ -101,7 +101,7 @@ export default function Dashboard() {
           transition={{ duration: 0.5, delay: 0.4 }}
         >
           <Link
-            to={ROUTES.CHALLENGES}
+            to={ROUTES.STATISTICS}
             aria-label="Continue with google"
             role="button"
             className="transition duration-500 ease select-none hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 bg-indigo-900 focus:ring-gray-700 py-3.5 px-4 border rounded-lg border-gray-700 flex items-center w-full mt-4"
@@ -127,7 +127,7 @@ export default function Dashboard() {
             </svg>
 
             <p className="text-base font-medium ml-4 text-gray-700 text-white">
-              Show challenges
+              Show Statistics
             </p>
           </Link>
         </motion.div>

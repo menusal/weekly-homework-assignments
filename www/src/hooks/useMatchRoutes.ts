@@ -1,7 +1,8 @@
 import { matchRoutes, useLocation } from "react-router-dom"
 
 const routesDashboard = [{ path: "/dashboard" }]
-const routesLogin = [{ path: "/login" }]
+const routesLogin = [{ path: "/login" }, { path: "/" }]
+
 
 export const useMatchRoutes = () => {
   const location = useLocation()

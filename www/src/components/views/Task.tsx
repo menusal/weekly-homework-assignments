@@ -4,6 +4,12 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../firebase";
 import useHomeworks from "../../hooks/useHomeworks";
 import useTasks from "../../hooks/useTasks";
+import JSConfetti from "js-confetti";
+import useSound from "use-sound";
+import tada from "../../assets/tada.mp3";
+import { Item } from "../../types";
+
+const jsConfetti = new JSConfetti();
 
 export default function Task() {
   const [user] = useAuthState(auth);
@@ -14,14 +20,22 @@ export default function Task() {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [currentTask, setCurrentTask] = useState("");
+  const [play] = useSound(tada);
 
   const { tasks, addTask, deleteTask } = useTasks(user?.uid);
   const { homeworks } = useHomeworks(user?.uid);
 
-  
-  const totalBenefit = tasks.reduce((acc, task) => {
-    return acc + task.homework.benefit;
-  }, 0); 
+  const totalBenefit = tasks.reduce((acc, task: Item) => {
+    // @ts-ignore
+    return acc + task?.homework?.benefit;
+  }, 0);
+
+  const celebrate = () => {
+    jsConfetti.addConfetti({
+      emojis: ["🐧​", "🐥​", "🐓​", "🐓​", "🐖​", "🦨"],
+    });
+    play();
+  };
 
   const handleAddTask = async () => {
     if (description.length === 0) {
@@ -51,7 +65,9 @@ export default function Task() {
 
     setLoading(false);
     setDescription("");
-    setHomework("");  
+    setHomework("");
+
+    celebrate();
   };
 
   const handleDeleteTask = async (id: string) => {
@@ -66,14 +82,16 @@ export default function Task() {
 
   return (
     <>
-      <div className="container flex flex-col md:flex-row items-center justify-center px-5 text-gray-700 m-4">
+      <div className="container flex flex-col md:flex-row items-center justify-center px-6 text-gray-700">
         <motion.div
           initial={{ opacity: 0, scale: 1 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 2 }}
         >
           <div className="container mx-auto  max-w-lg">
-            <p className="text-4xl text-white font-bold mb-5">Tasks - (€{totalBenefit})</p>
+            <p className="text-2xl text-white font-bold py-5">
+              Tasks - (€{totalBenefit})
+            </p>
           </div>
         </motion.div>
       </div>
@@ -114,14 +132,15 @@ export default function Task() {
               <select
                 value={homework}
                 onChange={(e) => {
-                  console.log(e.target.value);
                   setHomework(e.target.value);
                 }}
                 className="form-select px-4 py-3 rounded-md w-full mb-4"
               >
                 <option value="">Select homework</option>
                 {homeworks.map((homework) => (
+                  // @ts-ignore
                   <option key={homework.id} value={homework.id}>
+                    {/* @ts-ignore */}
                     {homework.description}
                   </option>
                 ))}
@@ -156,7 +175,7 @@ export default function Task() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <table className="min-w-full mb-32">
+                <table className="min-w-full mb-96">
                   <thead className="border-b">
                     <tr>
                       <th
@@ -178,15 +197,20 @@ export default function Task() {
                       <tr
                         key={index}
                         className="border-b cursor-pointer"
+                        // @ts-ignore
                         onClick={() => handleDeleteTask(task.id)}
                       >
                         <td className="text-lg text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                          <span className="text-xs">{task.date}</span><br /> {task.homework.description}
+                          {/* @ts-ignore */}
+                          <span className="text-xs">{task.date}</span>
+                          {/* @ts-ignore */}
+                          <br /> {task.homework.description}
                         </td>
                         <td
                           align="right"
                           className="text-lg font-bold text-gray-900 px-6 py-4 whitespace-nowrap"
                         >
+                          {/* @ts-ignore */}
                           €{task.homework.benefit}
                         </td>
                       </tr>
