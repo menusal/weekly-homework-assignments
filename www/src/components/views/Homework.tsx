@@ -13,7 +13,7 @@ export default function Homework() {
   const [benefit, setBenefit] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [currentHomework, setCurrentHomework] = useState("");
-  
+
   const { homeworks, addHomework, deleteHomework } = useHomeworks(user?.uid);
 
   const handleAddHomework = async () => {
@@ -126,46 +126,26 @@ export default function Homework() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
+                className="py-1 px-6"
               >
-                <table className="min-w-full mb-96">
-                  <thead className="border-b">
-                    <tr>
-                      <th
-                        scope="col"
-                        className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
-                      >
-                        Name
-                      </th>
-                      <th
-                        scope="col"
-                        className="text-sm font-medium text-gray-900 px-6 py-4 text-center"
-                      >
-                        Benefit
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {homeworks.map((homework: Item, index) => (
-                      <tr
-                        key={index}
-                        className="border-b cursor-pointer"
-                        // @ts-ignore
-                        onClick={() => handleDeleteHomework(homework.id)}
-                      >
-                        <td className="text-lg text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                          {homework.description as ReactNode}
-                        </td>
+                <dl className="max-w-md text-gray-900 divide-y divide-gray-200 dark:text-white dark:divide-gray-200 mb-72">
+                  {homeworks.map((homework: Item, index) => (
+                    <div
+                      className="flex flex-col pb-1"
+                      key={index} 
+                      // @ts-ignore
+                      onClick={() => handleDeleteHomework(homework.id)}
+                    >
+                      <div className=" text-lg text-gray-900 font-light py-2">
+                        {homework.description as ReactNode} <br />
                         {/* @ts-ignore */}
-                        <td
-                          align="right"
-                          className="text-lg font-bold text-gray-900 px-6 py-4 whitespace-nowrap"
-                        >
+                        <span className="text-lg font-bold text-gray-900">
                           {homework.benefit} €
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </dl>
               </motion.div>
             </div>
           </div>

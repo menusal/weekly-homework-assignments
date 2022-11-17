@@ -32,7 +32,7 @@ export default function App() {
     <>
       <AppProvider>
         <div className="h-full bg-gradient-to-tl from-green-400 to-indigo-900 w-full overflow-hidden ">
-          <div className="h-screen grid    justify-items-center w-screen">
+          <div className="h-screen grid justify-items-center w-screen">
             <Router>
               <Header />
               <Routes>
